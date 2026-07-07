@@ -12,7 +12,7 @@ module wide_ram #(
     reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
     initial begin
         if (INIT_FILE != "")
-            $readmemh(INIT_FILE, mem);   // 초기화를 모듈 내부에서 수행
+            $readmemh(INIT_FILE, mem);
     end
     always @(posedge clk) begin
         if (we) mem[addr] <= din;
@@ -30,10 +30,9 @@ module fpga_top_bram (
     output reg  [7:0]  an
 );
     localparam SIZE = 4, DW = 8, AW = 32;
-    localparam AWIDTH = SIZE*SIZE*DW;   // 128
-    localparam CWIDTH = SIZE*SIZE*AW;   // 512
+    localparam AWIDTH = SIZE*SIZE*DW;
+    localparam CWIDTH = SIZE*SIZE*AW;
 
-    // ---- 버튼 동기화 ----
     reg b0, b1, r0, r1;
     always @(posedge CLK100MHZ) begin
         b0 <= btnC; b1 <= b0;
@@ -42,7 +41,6 @@ module fpga_top_bram (
     wire start = b1;
     wire rst   = r1;
 
-    // ---- 입력 BRAM (초기화 파일은 파라미터로) ----
     wire sel = SW[15];
     wire [AWIDTH-1:0] a_flat, b_flat;
     wire [0:0] aaddr = sel;
@@ -54,7 +52,6 @@ module fpga_top_bram (
         .clk(CLK100MHZ), .we(1'b0), .addr(aaddr), .din({AWIDTH{1'b0}}), .dout(b_flat)
     );
 
-    // ---- 가속기 코어 (수정 없음) ----
     wire [CWIDTH-1:0] c_flat;
     wire done;
     matmul_top_ws #(.SIZE(SIZE), .DW(DW), .AW(AW)) core (
@@ -63,7 +60,6 @@ module fpga_top_bram (
         .c_flat(c_flat), .done(done)
     );
 
-    // ---- 결과 래치 ----
     reg [CWIDTH-1:0] c_stored;
     reg done_d;
     always @(posedge CLK100MHZ) begin
@@ -74,15 +70,14 @@ module fpga_top_bram (
         end
     end
 
-    // ---- 결과 원소 선택 : 가변 인덱스 대신 case 먹스 ----
     wire [3:0] eidx = SW[3:0];
     reg signed [AW-1:0] csel;
     integer gi;
     always @(*) begin
-        csel = c_stored[0 +: AW];           // 기본값
+        csel = c_stored[0 +: AW];
         for (gi = 0; gi < 16; gi = gi + 1)
             if (gi == eidx)
-                csel = c_stored[gi*AW +: AW];  // gi가 상수라 part-select 가능
+                csel = c_stored[gi*AW +: AW];
     end
 
     wire        neg = csel[AW-1];
@@ -92,7 +87,6 @@ module fpga_top_bram (
     wire [3:0] tens = (m / 10)  % 10;
     wire [3:0] ones =  m % 10;
 
-    // ---- 7세그먼트 ----
     reg [16:0] refresh;
     always @(posedge CLK100MHZ) refresh <= refresh + 1'b1;
     wire [1:0] dsel = refresh[16:15];
