@@ -9,7 +9,7 @@ module wide_ram #(
     input  wire [DATA_WIDTH-1:0]    din,
     output reg  [DATA_WIDTH-1:0]    dout
 );
-    reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
+    (* ram_style = "block" *) reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
     initial begin
         if (INIT_FILE != "")
             $readmemh(INIT_FILE, mem);
