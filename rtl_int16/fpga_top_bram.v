@@ -1,5 +1,5 @@
 module wide_ram #(
-    parameter DATA_WIDTH = 128,
+    parameter DATA_WIDTH = 256,
     parameter DEPTH      = 2,
     parameter INIT_FILE  = ""
 ) (
