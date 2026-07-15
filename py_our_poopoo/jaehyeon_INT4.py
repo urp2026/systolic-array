@@ -4,27 +4,13 @@ file_a = 'all_A.mem'
 file_b = 'all_B.mem'
 file_c_golden = 'all_C_golden.mem'
 
-# 2. 8비트 16진수 리스트에서 상위 4비트(INT4)만 추출하여 4x4 행렬로 변환하는 함수
-def hex_list_to_int4_matrix(hex_list):
-    dec_list = []
-    for x in hex_list:
-        # 1. 먼저 8비트 정수로 읽어옵니다. (예: '1A' -> 26, 'D4' -> 212)
-        val_8bit = int(x, 16)
-        
-        # 2. 상위 4비트(MSB 4-bit)만 추출합니다. 
-        # (예: '1A'의 상위 4비트는 '1', 'D4'의 상위 4비트는 'D')
-        val_4bit = (val_8bit >> 4) & 0xF
-        
-        # 3. 4-bit 부호 있는 정수(Signed INT4, 범위: -8 ~ +7)로 변환
-        # 4비트 값이 7보다 크면(즉, 8 ~ 15/Hex 8 ~ F) 음수로 인식하여 16을 빼줍니다.
-        if val_4bit > 7:
-            val_signed = val_4bit - 16
-        else:
-            val_signed = val_4bit
-            
-        dec_list.append(val_signed)
-        
-    # dec_list를 numpy array로 변환 후 4x4 형태로 재배치
+# 2. INT4 16진수 문자열 리스트를 4x4 행렬로 변환하는 함수
+def int4_hex_list_to_matrix(hex_list):
+    
+    # 4-bit 부호 있는 정수(2의 보수) 변환
+    # 4비트 값(0~15) 중 7보다 크면(8~F) 16을 빼서 음수로 변환합니다.
+    dec_list = [int(x, 16) - 16 if int(x, 16) > 7 else int(x, 16) for x in hex_list]
+    
     return np.array(dec_list).reshape(4, 4)
 
 # 3. 파일 읽기 및 처리
@@ -40,19 +26,18 @@ with open(file_a, 'r', encoding='utf-8') as fa, \
         if not line_a or not line_b:
             continue
 
-        # 각 파일 내의 8비트 줄에서 상위 4비트(INT4)만 가져와 matrix로 변환
-        A = hex_list_to_int4_matrix(line_a.split())
-        B = hex_list_to_int4_matrix(line_b.split())
+        # 각 파일 내의 줄을 가져와 4x4 INT4 Matrix로 곧바로 변환
+        A = int4_hex_list_to_matrix(line_a.split())
+        B = int4_hex_list_to_matrix(line_b.split())
 
         # Matrix Multiplication (INT4 x INT4) 수행
         C = np.matmul(A, B)
         
-        print(f"=== Test Case {case_idx} (INT4 computation) ===")
+        print(f"=== Test Case {case_idx} (Direct INT4) ===")
         print(C)
         print()
         
-        # C의 결과값은 16비트 부호 있는 정수(AW=16) 규격에 맞춰 16진수로 변환합니다.
-        # 음수 처리를 위해 0xFFFF로 마스킹하고, zfill(4)를 통해 4자리(16비트)로 맞춥니다.
+        # 출력 결과(C)는 하드웨어 규격(AW=16)에 맞추어 16비트 Hex(4자리) 형태로 기록합니다.
         c_hex_str = " ".join([hex(val & 0xFFFF)[2:].zfill(4).upper() for val in C.flatten()])
         
         fc.write(c_hex_str + "\n")
