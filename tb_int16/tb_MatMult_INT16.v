@@ -35,16 +35,17 @@ module tb_arrayMatMult;
         check( -1,   1);
         check(  1,  -1);
         check( -1,  -1);
-        check(127, 127); 
-        check(-128,-128);
-        check(-128, 127);
-        check( 127,-128);
-        check(-128,   1);
-        check( 100, -50);
-        check( -73,  42);
-
+        check( 32767,  32767);
+        check(-32768, -32768);
+        check(-32768,  32767);
+        check( 32767, -32768);
+        check(-32768,      1);
+        check(-32768,     -1);
+        check(  1000,   -500);
+        check(  -731,    421);
+        
         for (k = 0; k < 100; k = k + 1) begin
-            check($random % 256 - 128, $random % 256 - 128);
+            check($random, $random);
         end
 
         if (errors == 0)
