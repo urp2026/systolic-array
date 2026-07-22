@@ -1,5 +1,5 @@
 (* use_dsp = "no" *)
-module array_multiplier_signed #(parameter W = 4) ( // Default를 4로 변경
+module array_multiplier_signed #(parameter W = 4) ( 
     input wire signed  [W-1:0]   a,
     input wire signed  [W-1:0]   b,
     output wire signed [2*W-1:0] p
@@ -19,7 +19,7 @@ module array_multiplier_signed #(parameter W = 4) ( // Default를 4로 변경
 endmodule
 
 
-module pe_ws #(parameter DW = 4, parameter AW = 16) ( // DW=4, AW=16으로 조정
+module pe_ws #(parameter DW = 4, parameter AW = 16) (
     input wire                 clk,
     input wire                 rst,
     input wire                 load_w,
@@ -87,13 +87,13 @@ module systolic_array_ws #(parameter SIZE = 4, DW = 4, AW = 16) (
 endmodule
 
 
-module matmul_top_ws #(parameter SIZE = 4, DW = 4, AW = 16) ( // DW=4, AW=16으로 수정
+module matmul_top_ws #(parameter SIZE = 4, DW = 4, AW = 16) ( 
     input wire                    clk,
     input wire                    rst,
     input wire                    start,
-    input wire [SIZE*SIZE*DW-1:0] a_flat, // INT4 입력 행렬 A (16-bit total for 4x4)
-    input wire [SIZE*SIZE*DW-1:0] b_flat, // INT4 입력 행렬 B (16-bit total for 4x4)
-    output reg [SIZE*SIZE*AW-1:0] c_flat, // INT16 출력 행렬 C (256-bit total for 4x4)
+    input wire [SIZE*SIZE*DW-1:0] a_flat, 
+    input wire [SIZE*SIZE*DW-1:0] b_flat, 
+    output reg [SIZE*SIZE*AW-1:0] c_flat, 
     output reg                    done
 );
     localparam IDLE = 2'd0, LOAD = 2'd1, RUN = 2'd2, FIN = 2'd3;
