@@ -1,10 +1,6 @@
 `timescale 1ns/1ps
-// =====================================================================
-//  tb_golden_compare.v
-//   Python이 계산한 golden(C_golden.mem)과 하드웨어 결과를 비교
-//   - tb는 golden을 계산하지 않음 (파일에서 읽기만)
-//   - A,B는 하드웨어 입력, C_golden은 정답
-// =====================================================================
+
+
 module tb_golden_compare;
     localparam SIZE=4, DW=8, AW=32, NCASE=15;
     reg clk=0, rst=1, start=0;
@@ -17,16 +13,16 @@ module tb_golden_compare;
         .clk(clk),.rst(rst),.start(start),
         .a_flat(a_flat),.b_flat(b_flat),.c_flat(c_flat),.done(done));
 
-    // 입력 A,B (8비트) + golden C (32비트) 모두 파일에서 읽음
+  
     reg [7:0]  Amem [0:NCASE*16-1];
     reg [7:0]  Bmem [0:NCASE*16-1];
-    reg [31:0] Cgold[0:NCASE*16-1];      // Python golden
+    reg [31:0] Cgold[0:NCASE*16-1];      
     integer t,i,j,idx,cerr,terr,telem,badcase;
     reg [31:0] Cdut, Cexp;
 
     initial $readmemh("cases/all_A.mem",    Amem);
     initial $readmemh("cases/all_B.mem",    Bmem);
-    initial $readmemh("cases/C_golden.mem", Cgold);   // ★ golden을 계산 대신 로드
+    initial $readmemh("cases/C_golden.mem", Cgold);  
 
     task load_inputs(input integer c);
         begin
