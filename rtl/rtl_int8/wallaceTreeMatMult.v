@@ -31,7 +31,7 @@ module array_multiplier_signed #(parameter W = 8) (
 endmodule
 
 
-module pe_ws #(parameter DW = 8, parameter AW = 32) (  // DW(Data Width), AW(Accumulator Width)
+module pe_ws #(parameter DW = 8, parameter AW = 32) (  
     input wire clk,
     input wire rst,
     input wire load_w,
@@ -72,8 +72,8 @@ module systolic_array_ws #(parameter SIZE = 4, DW = 8, AW = 32) (
     input wire [SIZE*DW-1:0] a_west,
     output wire [SIZE*AW-1:0] c_south
 );
-    wire signed [DW-1:0] a_h [0:SIZE-1][0:SIZE];   // 데이터를 왼쪽에서 오른쪽으로 넘겨주기 위한 전선망
-    wire signed [AW-1:0] ps_v [0:SIZE][0:SIZE-1];  // 위에서 더한 합계를 아래로 넘겨주기 위한 전선망
+    wire signed [DW-1:0] a_h [0:SIZE-1][0:SIZE];   
+    wire signed [AW-1:0] ps_v [0:SIZE][0:SIZE-1];  
 
     genvar i, j;
     generate
